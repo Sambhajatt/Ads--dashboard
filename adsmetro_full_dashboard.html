@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AdsMetro - Mock Advertising Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chart.js CDN for real graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #f8fafc; 
+            margin: 0; 
+            padding: 0; 
+        }
+        header { 
+            background: #2e3192; 
+            color: #fff; 
+            padding: 24px 32px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 28px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 36px auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
+            padding: 32px 40px;
+        }
+        h1, h2, h3 {
+            color: #2e3192;
+        }
+        .dashboard-cards {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 38px;
+        }
+        .card {
+            background: #e9eefd;
+            border-radius: 10px;
+            padding: 30px 30px 20px 30px;
+            flex: 1 1 230px;
+            min-width: 210px;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+            text-align: center;
+        }
+        .card label {
+            color: #5f6a7d;
+            font-size: 1.1rem;
+        }
+        .card .value {
+            font-size: 2.3rem;
+            color: #2e3192;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+        .card .trend-up {
+            color: #27ae60;
+            margin-left: 6px;
+            font-size: 1.1rem;
+        }
+        .card .trend-down {
+            color: #e74c3c;
+            margin-left: 6px;
+            font-size: 1.1rem;
+        }
+        .dashboard-details {
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+        }
+        .detail-box {
+            flex: 1 1 260px;
+            background: #f5f8ff;
+            border-radius: 10px;
+            padding: 20px 22px 14px 22px;
+            box-shadow: 0 1px 6px rgba(44, 62, 80, 0.07);
+            margin-bottom: 8px;
+        }
+        .detail-label {
+            color: #345;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        .detail-value {
+            font-size: 1.2rem;
+            margin-bottom: 7px;
+        }
+        .ads-list {
+            margin: 32px 0;
+        }
+        .ads-list table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f6f9ff;
+            border-radius: 8px;
+        }
+        .ads-list th, .ads-list td {
+            padding: 14px 12px;
+            text-align: left;
+        }
+        .ads-list th {
+            background: #d3dafe;
+            color: #2e3192;
+            font-weight: 600;
+        }
+        .ads-list tr:nth-child(even) {
+            background: #f0f4fc;
+        }
+        .ads-list td {
+            vertical-align: middle;
+        }
+        .ads-list .ad-title {
+            font-weight: 500;
+        }
+        .payment-history {
+            margin: 32px 0 0 0;
+        }
+        .payment-history table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f9f9fb;
+            border-radius: 8px;
+        }
+        .payment-history th, .payment-history td {
+            padding: 12px 10px;
+            text-align: left;
+        }
+        .payment-history th {
+            background: #d3f5e7;
+            color: #227a5b;
+            font-weight: 600;
+        }
+        .payment-history tr:nth-child(even) {
+            background: #eaf9f2;
+        }
+        .payment-history-btn {
+            display: inline-block;
+            background: #2e3192;
+            color: #fff;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.13rem;
+            font-weight: 500;
+            margin: 10px 0 0 0;
+            cursor: pointer;
+        }
+        .payment-history-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(40, 50, 90, 0.17);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+        }
+        .payment-history-modal.active {
+            display: flex;
+        }
+        .payment-history-content {
+            background: #fff;
+            margin: 40px 0 40px 0;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(44, 62, 80, 0.19);
+            padding: 32px 36px;
+            max-width: 900px;
+            width: 98vw;
+            position: relative;
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 18px;
+            font-size: 2rem;
+            color: #2e3192;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .ad-banner {
+            display: flex;
+            align-items: center;
+            background: #fffbe6;
+            padding: 12px 18px;
+            border-radius: 7px;
+            box-shadow: 0 1px 8px rgba(255, 190, 0, 0.12);
+            margin-bottom: 8px;
+        }
+        .ad-banner img {
+            width: 62px;
+            height: 62px;
+            border-radius: 12px;
+            margin-right: 20px;
+        }
+        .ad-banner .game-title {
+            font-weight: 600;
+            color: #2e3192;
+            font-size: 1.14rem;
+            margin-bottom: 5px;
+        }
+        .ad-banner .desc {
+            color: #5f6a7d;
+        }
+        .ad-actions {
+            margin-top: 4px;
+        }
+        .ad-actions button {
+            margin-right: 7px;
+            padding: 5px 14px;
+            border: none;
+            border-radius: 4px;
+            background: #2e3192;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.98rem;
+        }
+        .ad-actions button.pause {
+            background: #faad14;
+            color: #2e3192;
+        }
+        .ad-actions button.resume {
+            background: #27ae60;
+        }
+        .ad-actions button.stats {
+            background: #0070c0;
+        }
+        .ad-actions button.remove {
+            background: #e74c3c;
+        }
+        .ad-details-expand {
+            background: #e1f0ff;
+            color: #345;
+            font-size: 0.96rem;
+            padding: 10px 20px;
+            margin: 5px 0 15px 0;
+            border-radius: 7px;
+            display: none;
+        }
+        .show {
+            display: block !important;
+        }
+        .chart-container {
+            margin: 32px 0 10px 0;
+            background: #f5f8ff;
+            border-radius: 11px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 6px rgba(44, 62, 80, 0.06);
+            max-width: 590px;
+        }
+        .legend {
+            margin: 0 0 5px 0;
+            font-size: 0.97rem;
+            color: #345;
+        }
+        .notes {
+            color: #6b7280;
+            font-size: 0.96rem;
+            margin-top: 6px;
+        }
+        .user-profile {
+            margin: 35px 0 0 0;
+            background: #fffdf7;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(255, 190, 0, 0.10);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .profile-pic {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #e9eefd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: #2e3192;
+            font-weight: 800;
+        }
+        .profile-details {
+            flex: 1;
+        }
+        .profile-details label {
+            color: #888;
+            font-size: 1.06rem;
+            margin-right: 8px;
+        }
+        .profile-details span {
+            font-size: 1.12rem;
+            margin-right: 20px;
+        }
+        .referral-section, .notification-section, .revenue-breakdown-section, .ad-performance-section, .ad-schedule-section, .ad-budget-section {
+            margin: 35px 0 0 0;
+            background: #e9eefd;
+            border-radius: 12px;
+            padding: 18px 24px;
+            box-shadow: 0 1px 8px rgba(44, 62, 80, 0.07);
+        }
+        .referral-title, .notification-title, .breakdown-title, .ad-performance-title, .ad-schedule-title, .ad-budget-title {
+            color: #2e3192;
+            font-weight: bold;
+            font-size: 1.13rem;
+            margin-bottom: 6px;
+        }
+        .referral-code {
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 1.13rem;
+            font-weight: bold;
+            color: #2e3192;
+            margin-right: 12px;
+            box-shadow: 0 1px 4px rgba(44, 62, 80, 0.06);
+        }
+        .copy-btn {
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: .96rem;
+        }
+        .notification-list {
+            margin: 8px 0 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .notification-list li {
+            margin-bottom: 7px;
+            padding-left: 2px;
+            font-size: 1.02rem;
+        }
+        .breakdown-table, .ad-performance-table, .ad-schedule-table, .ad-budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: #f6f9ff;
+            border-radius: 8px;
+        }
+        .breakdown-table th, .breakdown-table td,
+        .ad-performance-table th, .ad-performance-table td,
+        .ad-schedule-table th, .ad-schedule-table td,
+        .ad-budget-table th, .ad-budget-table td {
+            padding: 10px 10px;
+            text-align: left;
+        }
+        .breakdown-table th, .ad-performance-table th, .ad-schedule-table th, .ad-budget-table th {
+            background: #d3dafe;
+            color: #2e3192;
+            font-weight: 600;
+        }
+        .breakdown-table tr:nth-child(even), .ad-performance-table tr:nth-child(even),
+        .ad-schedule-table tr:nth-child(even), .ad-budget-table tr:nth-child(even) {
+            background: #f0f4fc;
+        }
+        @media (max-width: 800px) {
+            .container { padding: 20px 8px; }
+            .dashboard-cards, .dashboard-details { flex-direction: column; gap: 1.2rem;}
+            .user-profile, .referral-section, .notification-section, .revenue-breakdown-section, .ad-performance-section, .ad-schedule-section, .ad-budget-section { flex-direction: column; gap: 8px;}
+            .chart-container { max-width: 100%; }
+            .payment-history-modal .payment-history-content { padding: 16px 4px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AdsMetro</div>
+        <nav>
+            <a href="#">Dashboard</a>
+            <a href="#">Ads</a>
+            <a href="#">Reports</a>
+            <a href="#" id="paymentHistoryBtn" class="payment-history-btn">Payment History</a>
+            <a href="#">Profile</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Publisher Dashboard</h1>
+        <div class="dashboard-cards">
+            <div class="card">
+                <label>Today's Earnings</label>
+                <div class="value">₹3,290.00 <span class="trend-up">▲ +8%</span></div>
+            </div>
+            <div class="card">
+                <label>Today's Clicks</label>
+                <div class="value">360 <span class="trend-up">▲ +11%</span></div>
+            </div>
+            <div class="card">
+                <label>Today's Impressions</label>
+                <div class="value">11,420 <span class="trend-down">▼ -3%</span></div>
+            </div>
+            <div class="card">
+                <label>Total Earnings (This Month)</label>
+                <div class="value">₹2,182.18 <span class="trend-up">▲ +17%</span></div>
+            </div>
+        </div>
+        <div class="dashboard-details">
+            <div class="detail-box">
+                <div class="detail-label">eCPM (Effective Cost Per Mille)</div>
+                <div class="detail-value">₹288.11</div>
+                <div class="notes">Avg. earnings per 1000 impressions (₹3,290.00 / 11.42)</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">Top Performing Ad</div>
+                <div class="detail-value">Bharat Club Colour Prediction</div>
+                <div class="notes">CTR: 3.15%, Earnings: ₹3,290.00</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">Active Sites</div>
+                <div class="detail-value">3</div>
+                <div class="notes">mygameshub.in, quickrewards.co.in, play4cash.in</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">Last Payment</div>
+                <div class="detail-value">₹3,290.00</div>
+                <div class="notes">On 2025-06-09 via UPI (Paytm)</div>
+            </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:35px;">
+            <div class="chart-container" style="flex:1 1 290px;max-width:300px;">
+                <div class="legend">Performance (7 Days)</div>
+                <canvas id="mainChart" height="130"></canvas>
+                <div class="notes">Numbers match dashboard.</div>
+            </div>
+            <div class="chart-container" style="flex:1 1 190px;max-width:235px;">
+                <div class="legend">Device Split (Today)</div>
+                <canvas id="devicePie" height="110"></canvas>
+            </div>
+        </div>
+        <div class="revenue-breakdown-section">
+            <span class="breakdown-title">Revenue Breakdown (Today)</span>
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Earnings (INR)</th>
+                        <th>Impressions</th>
+                        <th>Clicks</th>
+                        <th>eCPM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bharat Club Colour Prediction</td>
+                        <td>₹3,290.00</td>
+                        <td>11,420</td>
+                        <td>360</td>
+                        <td>₹288.11</td>
+                    </tr>
+                    <tr>
+                        <td>Cash King</td>
+                        <td>₹17,500.00</td>
+                        <td>92,100</td>
+                        <td>5,412</td>
+                        <td>₹190.04</td>
+                    </tr>
+                    <tr>
+                        <td>Treasure Master</td>
+                        <td>₹12,300.00</td>
+                        <td>66,800</td>
+                        <td>3,310</td>
+                        <td>₹184.08</td>
+                    </tr>
+                    <tr>
+                        <td>Spin & Win</td>
+                        <td>₹21,450.00</td>
+                        <td>1,21,000</td>
+                        <td>7,854</td>
+                        <td>₹177.36</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="notes">Recent ads show high volumes as in real-world campaigns.</div>
+        </div>
+        <div class="ad-performance-section">
+            <span class="ad-performance-title">Ad Performance (Today)</span>
+            <table class="ad-performance-table">
+                <thead>
+                    <tr>
+                        <th>Ad Name</th>
+                        <th>Placement</th>
+                        <th>CTR (%)</th>
+                        <th>Avg. Session Duration</th>
+                        <th>Top Locations</th>
+                        <th>Device Split</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bharat Club Colour Prediction</td>
+                        <td>Homepage Banner</td>
+                        <td>3.15</td>
+                        <td>2m 53s</td>
+                        <td>Mumbai, Pune, Jaipur</td>
+                        <td>Android (78%), iOS (15%), Desktop (7%)</td>
+                    </tr>
+                    <tr>
+                        <td>Cash King</td>
+                        <td>Footer Banner</td>
+                        <td>5.88</td>
+                        <td>2m 12s</td>
+                        <td>Delhi, Lucknow, Patna</td>
+                        <td>Android (62%), iOS (25%), Desktop (13%)</td>
+                    </tr>
+                    <tr>
+                        <td>Treasure Master</td>
+                        <td>Sidebar Rectangle</td>
+                        <td>4.96</td>
+                        <td>2m 34s</td>
+                        <td>Bangalore, Pune, Surat</td>
+                        <td>Android (68%), iOS (22%), Desktop (10%)</td>
+                    </tr>
+                    <tr>
+                        <td>Spin & Win</td>
+                        <td>Top Banner</td>
+                        <td>6.49</td>
+                        <td>3m 09s</td>
+                        <td>Kolkata, Ahmedabad, Vizag</td>
+                        <td>Android (71%), iOS (19%), Desktop (10%)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- INSIGHTS & STATISTICS SECTION -->
+        <div class="ad-performance-section">
+            <span class="ad-performance-title">Ad Insights & Statistics</span>
+            <table class="ad-performance-table">
+                <thead>
+                    <tr>
+                        <th>Ad Name</th>
+                        <th>Impressions</th>
+                        <th>Clicks</th>
+                        <th>CTR (%)</th>
+                        <th>Earnings (INR)</th>
+                        <th>Avg. CPC (₹)</th>
+                        <th>Top Device</th>
+                        <th>Top Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bharat Club Colour Prediction</td>
+                        <td>11,420</td>
+                        <td>360</td>
+                        <td>3.15</td>
+                        <td>₹3,290.00</td>
+                        <td>₹9.14</td>
+                        <td>Android (78%)</td>
+                        <td>Mumbai</td>
+                    </tr>
+                    <tr>
+                        <td>Cash King</td>
+                        <td>92,100</td>
+                        <td>5,412</td>
+                        <td>5.88</td>
+                        <td>₹17,500.00</td>
+                        <td>₹3.23</td>
+                        <td>Android (62%)</td>
+                        <td>Delhi</td>
+                    </tr>
+                    <tr>
+                        <td>Treasure Master</td>
+                        <td>66,800</td>
+                        <td>3,310</td>
+                        <td>4.96</td>
+                        <td>₹12,300.00</td>
+                        <td>₹3.72</td>
+                        <td>Android (68%)</td>
+                        <td>Bangalore</td>
+                    </tr>
+                    <tr>
+                        <td>Spin & Win</td>
+                        <td>1,21,000</td>
+                        <td>7,854</td>
+                        <td>6.49</td>
+                        <td>₹21,450.00</td>
+                        <td>₹2.73</td>
+                        <td>Android (71%)</td>
+                        <td>Kolkata</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="notes">
+                <b>Insights:</b> Spin & Win has the highest impressions, clicks and lowest CPC. Cash King and Spin & Win both deliver strong CTRs and high earnings. 
+                Bharat Club Colour Prediction, while newer, has a high CPC due to niche targeting. All ads perform best on Android; optimize for mobile traffic.
+            </div>
+        </div>
+        <div class="ad-schedule-section">
+            <span class="ad-schedule-title">Ad Scheduling</span>
+            <table class="ad-schedule-table">
+                <thead>
+                    <tr>
+                        <th>Ad Name</th>
+                        <th>Active Days</th>
+                        <th>Time Slots</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bharat Club Colour Prediction</td>
+                        <td>Mon-Sun</td>
+                        <td>08:00 - 22:00</td>
+                        <td style="color:green;">Running</td>
+                    </tr>
+                    <tr>
+                        <td>Cash King</td>
+                        <td>Mon-Fri</td>
+                        <td>09:00 - 20:00</td>
+                        <td style="color:green;">Running</td>
+                    </tr>
+                    <tr>
+                        <td>Treasure Master</td>
+                        <td>Sat-Sun</td>
+                        <td>10:00 - 18:00</td>
+                        <td style="color:orange;">Paused</td>
+                    </tr>
+                    <tr>
+                        <td>Spin & Win</td>
+                        <td>Mon-Sun</td>
+                        <td>00:00 - 23:59</td>
+                        <td style="color:green;">Running</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="notes">Schedule your ads for optimal reach, like Google Ads campaign scheduling.</div>
+        </div>
+        <div class="ad-budget-section">
+            <span class="ad-budget-title">Budget & Spend</span>
+            <table class="ad-budget-table">
+                <thead>
+                    <tr>
+                        <th>Ad Name</th>
+                        <th>Daily Budget</th>
+                        <th>Spent (Today)</th>
+                        <th>Remaining</th>
+                        <th>Bid Strategy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bharat Club Colour Prediction</td>
+                        <td>₹3,500.00</td>
+                        <td>₹3,290.00</td>
+                        <td>₹210.00</td>
+                        <td>Maximize Clicks</td>
+                    </tr>
+                    <tr>
+                        <td>Cash King</td>
+                        <td>₹18,000.00</td>
+                        <td>₹17,500.00</td>
+                        <td>₹500.00</td>
+                        <td>Manual CPC</td>
+                    </tr>
+                    <tr>
+                        <td>Treasure Master</td>
+                        <td>₹13,000.00</td>
+                        <td>₹12,300.00</td>
+                        <td>₹700.00</td>
+                        <td>Target CPA</td>
+                    </tr>
+                    <tr>
+                        <td>Spin & Win</td>
+                        <td>₹22,000.00</td>
+                        <td>₹21,450.00</td>
+                        <td>₹550.00</td>
+                        <td>Maximize Conversions</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="notes">Inspired by Google Ads/Meta: Set daily budgets, see spend, and optimize bids.</div>
+        </div>
+        <h2>Active Ads </h2>
+        <div class="ads-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ad Preview</th>
+                        <th>Game Name</th>
+                        <th>Impressions</th>
+                        <th>Clicks</th>
+                        <th>CTR (%)</th>
+                        <th>Earnings (INR)</th>
+                        <th>Status</th>
+                        <th>Ad Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="ad-banner">
+                                <img src="https://img.icons8.com/color/96/india.png" alt="Bharat Club Colour Prediction">
+                                <div>
+                                    <div class="game-title">Bharat Club Colour Prediction</div>
+                                    <div class="desc">Predict colours, play & win real cash! New ad launched on 9 June 2025.</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ad-title">Bharat Club Colour Prediction</td>
+                        <td>11,420</td>
+                        <td>360</td>
+                        <td>3.15</td>
+                        <td>₹3,290.00</td>
+                        <td style="color: green;">Active</td>
+                        <td>
+                            <div class="ad-actions">
+                                <button class="stats" onclick="toggleAdDetails('ad-bharat')">Details</button>
+                                <button class="pause">Pause</button>
+                                <button class="remove">Remove</button>
+                            </div>
+                            <div id="ad-bharat" class="ad-details-expand">
+                                <b>Ad Placement:</b> Homepage Banner<br>
+                                <b>Launched On:</b> 2025-06-09<br>
+                                <b>Clicks from:</b> Android (78%), iOS (15%), Desktop (7%)<br>
+                                <b>Top Locations:</b> Mumbai, Pune, Jaipur<br>
+                                <b>Conversion Rate:</b> 9.8%<br>
+                                <b>Avg. Session Duration:</b> 2m 53s<br>
+                                <b>Promotion Details:</b> Colour prediction game, instant UPI withdrawals.<br>
+                                <b>Ad ID:</b> AD-BCP-20250609<br>
+                                <b>Payment:</b> ₹3,290.00 (see Payment History)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ad-banner">
+                                <img src="https://img.icons8.com/fluency/96/cash-in-hand.png" alt="Cash King Ad">
+                                <div>
+                                    <div class="game-title">Cash King</div>
+                                    <div class="desc">Win real money with every play. Instant cashouts!</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ad-title">Cash King</td>
+                        <td>92,100</td>
+                        <td>5,412</td>
+                        <td>5.88</td>
+                        <td>₹17,500.00</td>
+                        <td style="color: green;">Active</td>
+                        <td>
+                            <div class="ad-actions">
+                                <button class="stats" onclick="toggleAdDetails('ad1')">Details</button>
+                                <button class="pause">Pause</button>
+                                <button class="remove">Remove</button>
+                            </div>
+                            <div id="ad1" class="ad-details-expand">
+                                <b>Ad Placement:</b> Footer Banner<br>
+                                <b>Clicks from:</b> Android (62%), iOS (25%), Desktop (13%)<br>
+                                <b>Top Locations:</b> Delhi, Lucknow, Patna<br>
+                                <b>Conversion Rate:</b> 10.5%<br>
+                                <b>Avg. Session Duration:</b> 2m 12s
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ad-banner">
+                                <img src="https://img.icons8.com/fluency/96/treasure-chest.png" alt="Treasure Master Ad">
+                                <div>
+                                    <div class="game-title">Treasure Master</div>
+                                    <div class="desc">Find treasures, earn big rewards. 100% legal!</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ad-title">Treasure Master</td>
+                        <td>66,800</td>
+                        <td>3,310</td>
+                        <td>4.96</td>
+                        <td>₹12,300.00</td>
+                        <td style="color: orange;">Paused</td>
+                        <td>
+                            <div class="ad-actions">
+                                <button class="stats" onclick="toggleAdDetails('ad2')">Details</button>
+                                <button class="resume">Resume</button>
+                                <button class="remove">Remove</button>
+                            </div>
+                            <div id="ad2" class="ad-details-expand">
+                                <b>Ad Placement:</b> Sidebar Rectangle<br>
+                                <b>Clicks from:</b> Android (68%), iOS (22%), Desktop (10%)<br>
+                                <b>Top Locations:</b> Bangalore, Pune, Surat<br>
+                                <b>Conversion Rate:</b> 12.7%<br>
+                                <b>Avg. Session Duration:</b> 2m 34s
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ad-banner">
+                                <img src="https://img.icons8.com/fluency/96/slot-machine.png" alt="Spin & Win Ad">
+                                <div>
+                                    <div class="game-title">Spin & Win</div>
+                                    <div class="desc">Daily spins, daily winnings. Try your luck now.</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ad-title">Spin & Win</td>
+                        <td>1,21,000</td>
+                        <td>7,854</td>
+                        <td>6.49</td>
+                        <td>₹21,450.00</td>
+                        <td style="color: green;">Active</td>
+                        <td>
+                            <div class="ad-actions">
+                                <button class="stats" onclick="toggleAdDetails('ad3')">Details</button>
+                                <button class="pause">Pause</button>
+                                <button class="remove">Remove</button>
+                            </div>
+                            <div id="ad3" class="ad-details-expand">
+                                <b>Ad Placement:</b> Top Banner<br>
+                                <b>Clicks from:</b> Android (71%), iOS (19%), Desktop (10%)<br>
+                                <b>Top Locations:</b> Kolkata, Ahmedabad, Vizag<br>
+                                <b>Conversion Rate:</b> 14.9%<br>
+                                <b>Avg. Session Duration:</b> 3m 09s
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="referral-section">
+            <span class="referral-title">Refer & Earn</span>
+            <div>
+                <span class="referral-code" id="refCode">ADSIN1234</span>
+                <button class="copy-btn" onclick="navigator.clipboard.writeText('ADSIN1234')">Copy Code</button>
+            </div>
+            <div class="notes">Invite friends and earn 5% of their ad revenue for the first 3 months.</div>
+        </div>
+        <div class="notification-section">
+            <span class="notification-title">Recent Notifications</span>
+            <ul class="notification-list">
+                <li><b>2025-06-09:</b> Payment of ₹3,290.00 for Bharat Club Colour Prediction processed via UPI.</li>
+                <li><b>2025-06-09:</b> High spend alert: Spin & Win spent ₹21,450.00 today.</li>
+                <li><b>2025-06-09:</b> High clicks: Cash King crossed 5,000 clicks today!</li>
+                <li><b>2025-06-09:</b> New payment received for Treasure Master (₹12,300.00).</li>
+                <li><b>2025-06-09:</b> All ads delivered above-average performance today.</li>
+            </ul>
+        </div>
+        <div class="user-profile">
+            <div class="profile-pic">S</div>
+            <div class="profile-details">
+                <div><label>Name:</label><span>Sambhajatt</span></div>
+                <div><label>Email:</label><span>sambhajatt@example.com</span></div>
+                <div><label>Publisher ID:</label><span>AEI-IN-029384</span></div>
+                <div><label>Status:</label><span style="color:green;">Verified</span></div>
+                <div><label>GSTIN:</label><span>27ABCDE1234F1Z5</span></div>
+                <div><label>Registered Since:</label><span>2024-12-15</span></div>
+            </div>
+        </div>
+    </div>
+    <!-- Payment History Modal (hidden by default, shown on click) -->
+    <div class="payment-history-modal" id="paymentHistoryModal">
+        <div class="payment-history-content">
+            <button class="close-modal-btn" id="closeModalBtn" title="Close">&times;</button>
+            <h2>Payment History</h2>
+            <div class="payment-history">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction ID</th>
+                            <th>Amount (INR)</th>
+                            <th>Status</th>
+                            <th>Payment Method</th>
+                            <th>Invoice</th>
+                            <th>Ad Campaign</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-06-09</td>
+                            <td>#PAYIN2108912</td>
+                            <td>₹3,290.00</td>
+                            <td style="color: green;">Paid</td>
+                            <td>UPI (Paytm)</td>
+                            <td><a href="#">Download</a></td>
+                            <td>Bharat Club Colour Prediction</td>
+                        </tr>
+                        <tr>
+                            <td>2025-06-09</td>
+                            <td>#PAYIN2108913</td>
+                            <td>₹17,500.00</td>
+                            <td style="color: green;">Paid</td>
+                            <td>Bank Transfer (SBI)</td>
+                            <td><a href="#">Download</a></td>
+                            <td>Cash King</td>
+                        </tr>
+                        <tr>
+                            <td>2025-06-09</td>
+                            <td>#PAYIN2108914</td>
+                            <td>₹12,300.00</td>
+                            <td style="color: green;">Paid</td>
+                            <td>UPI (Google Pay)</td>
+                            <td><a href="#">Download</a></td>
+                            <td>Treasure Master</td>
+                        </tr>
+                        <tr>
+                            <td>2025-06-09</td>
+                            <td>#PAYIN2108915</td>
+                            <td>₹21,450.00</td>
+                            <td style="color: green;">Paid</td>
+                            <td>Bank Transfer (HDFC)</td>
+                            <td><a href="#">Download</a></td>
+                            <td>Spin & Win</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="notes">All payments and earnings reflect the active and recent ads.</div>
+            </div>
+        </div>
+    </div>
+    <script>
+    // Chart data (unchanged)
+    const impressionsArr = [10500, 10680, 10900, 11010, 11080, 11200, 11420];
+    const clicksArr =      [300,   305,   320,   335,   340,   355,   360];
+    const earningsArr =    [1000,  1200,  900,   1082.18, 1000,  1100, 3290];
+
+    var mainChart = document.getElementById('mainChart') ? document.getElementById('mainChart').getContext('2d') : null;
+    if(mainChart) {
+        new Chart(mainChart, {
+            type: 'line',
+            data: {
+                labels: ['Jun 3','Jun 4','Jun 5','Jun 6','Jun 7','Jun 8','Jun 9'],
+                datasets: [
+                    {
+                        label: 'Impressions',
+                        data: impressionsArr,
+                        borderColor: '#faad14',
+                        backgroundColor: 'rgba(250,173,20,0.10)',
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: 'Clicks',
+                        data: clicksArr,
+                        borderColor: '#2e3192',
+                        backgroundColor: 'rgba(46,49,146,0.08)',
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y1',
+                    },
+                    {
+                        label: 'Earnings (₹)',
+                        data: earningsArr,
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39,174,96,0.11)',
+                        tension: 0.3,
+                        fill: true,
+                        yAxisID: 'y2',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                stacked: false,
+                scales: {
+                    y: { type: 'linear', display: true, position: 'left', title:{display:true,text:'Impressions'} },
+                    y1: { type: 'linear', display: true, position: 'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Clicks'} },
+                    y2: { type: 'linear', display: false, position: 'right', grid:{drawOnChartArea:false} }
+                },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    }
+
+    // Pie chart for today's click devices (matches Bharat Club Colour Prediction)
+    var devicePie = document.getElementById('devicePie') ? document.getElementById('devicePie').getContext('2d') : null;
+    if(devicePie) {
+        new Chart(devicePie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Android', 'iOS', 'Desktop'],
+                datasets: [{
+                    data: [281, 54, 25], // 78%, 15%, 7% of 360 clicks
+                    backgroundColor: ['#2e3192','#faad14','#27ae60']
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // Ad details expand/collapse
+    function toggleAdDetails(id) {
+        var el = document.getElementById(id);
+        if (el.classList.contains('show')) {
+            el.classList.remove('show');
+        } else {
+            el.classList.add('show');
+        }
+    }
+
+    // Payment History Modal Logic
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('paymentHistoryModal');
+        var btn = document.getElementById('paymentHistoryBtn');
+        var closeBtn = document.getElementById('closeModalBtn');
+        if(btn && modal && closeBtn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            // Dismiss modal on outside click
+            modal.addEventListener('click', function(e) {
+                if(e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
